@@ -10,7 +10,7 @@ ConfigurationReader configurationReader = new ConfigurationReader("SERVICE-A", "
 int a = 0;
 while (true)
 {
-    Console.WriteLine(a.ToString() + " - " + configurationReader.GetValue<int>("MaxItemCount"));
+    Console.WriteLine(a.ToString() + " - " + configurationReader.GetValue<string>("SiteName"));
     Thread.Sleep(1000); // 1000 milisaniye = 1 saniye
     a++;
 }
