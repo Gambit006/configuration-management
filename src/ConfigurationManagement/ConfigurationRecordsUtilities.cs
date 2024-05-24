@@ -12,23 +12,25 @@ namespace ConfigurationManagement
 {
     public class ConfigurationRecordsUtilities
     {
-        private string connectionString;
+        private string _connectionString;
 
         public ConfigurationRecordsUtilities(string connectionString)
         {
-            connectionString = connectionString;
+            _connectionString = connectionString;
         }
 
         public List<ConfigurationModel> GetConfigurationRecords(string applicationName)
         {
             //mongodb connection
-            var client = new MongoClient(connectionString);
+            var client = new MongoClient(_connectionString);
 
             //created filter tp get active records of appName 
             var filter = Builders<BsonDocument>.Filter.Eq("ApplicationName", applicationName) & Builders<BsonDocument>.Filter.Eq("IsActive", true);
 
+
             //get records from db
             var documents = client.GetDatabase("ConfigruationManagementDB").GetCollection<BsonDocument>("ConfigurationRecords").Find(filter).ToList();
+            documents = client.GetDatabase("ConfigurationManagementDB").GetCollection<BsonDocument>("ConfigurationRecords").Find(_ => true).ToList();
 
             return ConfigurationModelMapping(documents);
         }
@@ -52,13 +54,13 @@ namespace ConfigurationManagement
             switch (type.ToLower())
             {
                 case "string":
-                    return value;
+                    return value.ToString();
                 case "int":
-                    return int.Parse(value);
+                    return Convert.ToInt32(value);
                 case "bool":
-                    return bool.Parse(value);
+                    return Convert.ToBoolean(Convert.ToInt32(value));
                 case "double":
-                    return double.Parse(value);
+                    return Convert.ToDouble(value);
                 default:
                     throw new Exception("Unknown type");
             }
