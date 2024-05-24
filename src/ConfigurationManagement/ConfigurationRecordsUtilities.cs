@@ -19,32 +19,33 @@ namespace ConfigurationManagement
             _connectionString = connectionString;
         }
 
-        public List<ConfigurationModel> GetConfigurationRecords(string applicationName)
+        public List<ConfigurationRecord> GetConfigurationRecords(string applicationName)
         {
             //mongodb connection
             var client = new MongoClient(_connectionString);
 
             //created filter tp get active records of appName 
-            var filter = Builders<BsonDocument>.Filter.Eq("ApplicationName", applicationName) & Builders<BsonDocument>.Filter.Eq("IsActive", true);
+            var filter = Builders<BsonDocument>.Filter.Eq("ApplicationName", applicationName);
 
 
             //get records from db
-            var documents = client.GetDatabase("ConfigruationManagementDB").GetCollection<BsonDocument>("ConfigurationRecords").Find(filter).ToList();
-            documents = client.GetDatabase("ConfigurationManagementDB").GetCollection<BsonDocument>("ConfigurationRecords").Find(_ => true).ToList();
+            var documents = client.GetDatabase("ConfigurationManagementDB").GetCollection<BsonDocument>("ConfigurationRecords").Find(filter).ToList();
 
             return ConfigurationModelMapping(documents);
         }
 
-        private List<ConfigurationModel> ConfigurationModelMapping(List<BsonDocument> documents)
+        private List<ConfigurationRecord> ConfigurationModelMapping(List<BsonDocument> documents)
         {
-            var configurations = new List<ConfigurationModel>();
+            var configurations = new List<ConfigurationRecord>();
             foreach (var document in documents)
             {
+                var id = document["Id"].AsInt32;
                 var name = document["Name"].AsString;
                 var type = document["Type"].AsString;
                 var value = document["Value"].ToString();
+                var isActive = document["IsActive"].AsBoolean;
 
-                configurations.Add(new ConfigurationModel(name, ConvertToType(value, type)));
+                configurations.Add(new ConfigurationRecord(id, name, type, ConvertToType(value, type), isActive));
             }
             return configurations;
         }
@@ -67,15 +68,22 @@ namespace ConfigurationManagement
         }
     }
 
-    public class ConfigurationModel
+
+    public class ConfigurationRecord
     {
-        public ConfigurationModel(string name, object value)
+        public ConfigurationRecord(int id, string name, string type, object value, bool isActive)
         {
+            Id = id;
             Name = name;
+            Type = type;
             Value = value;
+            IsActive = isActive;
         }
 
+        public int Id { get; set; }
         public string Name { get; set; }
+        public string Type { get; set; }
         public object Value { get; set; }
+        public bool IsActive { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace ConfigurationManagement
         public int refreshTimerIntervalInMs;
 
         // list of config records
-        private List<ConfigurationModel> records;
+        private List<ConfigurationRecord> records;
 
         //variables for timer
         private Timer timer;
@@ -49,7 +49,7 @@ namespace ConfigurationManagement
 
         public T? GetValue<T>(string key)
         {
-            var record = records.Where(r => r.Name == key).FirstOrDefault();
+            var record = records.Where(r => r.Name == key && r.IsActive == true).FirstOrDefault();
 
             if (record != null)
                 return (T?)record.Value;
