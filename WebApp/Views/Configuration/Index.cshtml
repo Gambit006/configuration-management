@@ -1,0 +1,52 @@
+﻿@model IEnumerable<WebApp.Models.ConfigurationRecordViewModel>
+
+@{
+    ViewData["Title"] = "Configuration";
+}
+
+
+
+
+<h1>Configuration</h1>
+
+<table class="table table-hover table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Value</th>
+            <th>Is Active</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var record in Model)
+        {
+            <tr>
+                <form method="post" asp-action="Update">
+                <td><input type="text" name="Name" value="@record.Name" class="form-control" /></td>
+                <td>
+                    <select name="Type" class="form-select">
+                        <option value="string">string</option>
+                        <option value="bool">bool</option>
+                        <option value="int">int</option>
+                        <option value="double">double</option>
+                    </select>
+                </td>
+                <td><input type="text" name="Value" value="@record.Value" class="form-control" /></td>
+                <td><input type="checkbox" name="IsActive" @(record.IsActive ? "checked" : "") class="form-check-input" /></td>
+                <td>
+                    <input type="hidden" name="Id" value="@record.Id" />
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </td>
+                </form>
+                <td>
+                    <form method="post" asp-action="Delete">
+                        <input type="hidden" name="id" value="@record.Id" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

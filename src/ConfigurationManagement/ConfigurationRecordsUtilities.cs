@@ -13,19 +13,21 @@ namespace ConfigurationManagement
     public class ConfigurationRecordsUtilities
     {
         private string _connectionString;
+        private string _applicationName;
 
-        public ConfigurationRecordsUtilities(string connectionString)
+        public ConfigurationRecordsUtilities(string connectionString, string applicationName)
         {
             _connectionString = connectionString;
+            _applicationName = applicationName;
         }
 
-        public List<ConfigurationRecord> GetConfigurationRecords(string applicationName)
+        public List<ConfigurationRecord> GetConfigurationRecords()
         {
             //mongodb connection
             var client = new MongoClient(_connectionString);
 
             //created filter tp get active records of appName 
-            var filter = Builders<BsonDocument>.Filter.Eq("ApplicationName", applicationName);
+            var filter = Builders<BsonDocument>.Filter.Eq("ApplicationName", _applicationName);
 
 
             //get records from db
@@ -33,6 +35,7 @@ namespace ConfigurationManagement
 
             return ConfigurationModelMapping(documents);
         }
+
 
         private List<ConfigurationRecord> ConfigurationModelMapping(List<BsonDocument> documents)
         {
@@ -46,11 +49,14 @@ namespace ConfigurationManagement
                 var isActive = document["IsActive"].AsBoolean;
 
                 configurations.Add(new ConfigurationRecord(id, name, type, ConvertToType(value, type), isActive));
+
+
             }
             return configurations;
         }
 
-        private object ConvertToType(string value, string type)
+
+        public static object ConvertToType(string value, string type)
         {
             switch (type.ToLower())
             {
@@ -66,7 +72,77 @@ namespace ConfigurationManagement
                     throw new Exception("Unknown type");
             }
         }
+        public static string ConvertFromType(object value)
+        {
+            if (value is string)
+            {
+                return value.ToString();
+            }
+            else if (value is int)
+            {
+                return value.ToString();
+            }
+            else if (value is bool)
+            {
+                // Boole değerini 0 veya 1 olarak döndür
+                return ((bool)value) ? "1" : "0";
+            }
+            else if (value is double)
+            {
+                return value.ToString();
+            }
+            else
+            {
+                throw new Exception("Unknown type");
+            }
+        }
+
+        public void UpdateRecord(ConfigurationRecord record)
+        {
+            var client = new MongoClient(_connectionString);
+            var collection = client.GetDatabase("ConfigurationManagementDB").GetCollection<BsonDocument>("ConfigurationRecords");
+
+            var filter = Builders<BsonDocument>.Filter.Eq("Id", record.Id);
+            var update = Builders<BsonDocument>.Update
+                .Set("Name", record.Name)
+                .Set("Type", record.Type)
+                .Set("Value", ConvertFromType(record.Value))
+                .Set("IsActive", record.IsActive);
+
+            collection.UpdateOne(filter, update);
+        }
+
+        public void DeleteRecord(int id)
+        {
+            var client = new MongoClient(_connectionString);
+            var collection = client.GetDatabase("ConfigurationManagementDB").GetCollection<BsonDocument>("ConfigurationRecords");
+
+            var filter = Builders<BsonDocument>.Filter.Eq("Id", id);
+            collection.DeleteOne(filter);
+        }
+
+        public void InsertRecord(ConfigurationRecord record)
+        {
+            var client = new MongoClient(_connectionString);
+            var collection = client.GetDatabase("ConfigurationManagementDB").GetCollection<BsonDocument>("ConfigurationRecords");
+
+            var document = new BsonDocument
+            {
+                { "Id", record.Id },
+                { "Name", record.Name },
+                { "Type", record.Type },
+                { "Value", ConvertFromType(record.Value) },
+                { "IsActive", record.IsActive },
+                {"ApplicationName", _applicationName },
+            };
+
+            collection.InsertOne(document);
+        }
     }
+
+
+
+
 
 
     public class ConfigurationRecord
@@ -86,4 +162,6 @@ namespace ConfigurationManagement
         public object Value { get; set; }
         public bool IsActive { get; set; }
     }
+
+
 }

@@ -28,8 +28,8 @@ namespace ConfigurationManagement
             this.connectionString = connectionString;
             this.refreshTimerIntervalInMs = refreshTimerIntervalInMs;
 
-            ConfigurationRecordsUtilities connection = new ConfigurationRecordsUtilities(connectionString);
-            records = connection.GetConfigurationRecords(applicationName);
+            ConfigurationRecordsUtilities connection = new ConfigurationRecordsUtilities(connectionString, applicationName);
+            records = connection.GetConfigurationRecords();
 
             RefreshConfigruation();
         }
@@ -42,8 +42,8 @@ namespace ConfigurationManagement
 
         private void GetRecordFromDb(object state)
         {
-            ConfigurationRecordsUtilities connection = new ConfigurationRecordsUtilities(connectionString);
-            records = connection.GetConfigurationRecords(applicationName);
+            ConfigurationRecordsUtilities connection = new ConfigurationRecordsUtilities(connectionString, applicationName);
+            records = connection.GetConfigurationRecords();
         }
 
 
