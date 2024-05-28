@@ -18,7 +18,6 @@ namespace ConfigurationManagement
 
         //variables for timer
         private Timer timer;
-        private DateTime lastRefreshTimerIntervalInMs = DateTime.MinValue;
 
 
 
@@ -43,7 +42,9 @@ namespace ConfigurationManagement
         private void GetRecordFromDb(object state)
         {
             ConfigurationRecordsUtilities connection = new ConfigurationRecordsUtilities(connectionString, applicationName);
-            records = connection.GetConfigurationRecords();
+            var refreshRecords = connection.GetConfigurationRecords();
+            if (refreshRecords.Count != 0)
+                records = refreshRecords;
         }
 
 
