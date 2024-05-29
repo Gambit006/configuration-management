@@ -8,9 +8,10 @@ namespace WebApp.Controllers
     {
         private readonly ConfigurationRecordsUtilities _configurationRecordsUtilities;
 
-        public ConfigurationController()
+        public ConfigurationController(IConfiguration configuration)
         {
-            _configurationRecordsUtilities = new ConfigurationRecordsUtilities("mongodb://localhost:27017/", "SERVICE-A");
+            var ConnectionString = configuration["ConnectionStrings:MongoDbConnString"];
+            _configurationRecordsUtilities = new ConfigurationRecordsUtilities(ConnectionString, "SERVICE-A");
         }
 
         public IActionResult Index()
