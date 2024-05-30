@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ConfigurationManagement.DatabaseConnection;
+using ConfigurationManagement.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +29,8 @@ namespace ConfigurationManagement
             this.connectionString = connectionString;
             this.refreshTimerIntervalInMs = refreshTimerIntervalInMs;
 
-            ConfigurationRecordsUtilities connection = new ConfigurationRecordsUtilities(connectionString, applicationName);
+            IDatabaseConnection connection = new MongoDbConnection(connectionString, applicationName);
+            connection.Open();
             records = connection.GetConfigurationRecords();
 
             RefreshConfigruation();
@@ -41,7 +44,8 @@ namespace ConfigurationManagement
 
         private void GetRecordFromDb(object state)
         {
-            ConfigurationRecordsUtilities connection = new ConfigurationRecordsUtilities(connectionString, applicationName);
+            IDatabaseConnection connection = new MongoDbConnection(connectionString, applicationName);
+            connection.Open();
             var refreshRecords = connection.GetConfigurationRecords();
             if (refreshRecords.Count != 0)
                 records = refreshRecords;
