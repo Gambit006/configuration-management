@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConfigurationManagement.Extceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,7 @@ namespace ConfigurationManagement.Utility
                 case "double":
                     return Convert.ToDouble(value);
                 default:
-                    throw new Exception("Unknown type");
+                    throw new UndefinedDataTypeException("Unknown type");
             }
         }
         public static string ConvertFromType(object value)
