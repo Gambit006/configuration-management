@@ -1,4 +1,7 @@
 ﻿using ConfigurationManagement;
+using ConfigurationManagement.DatabaseConnection;
+using ConfigurationManagement.Models;
+using ConfigurationManagement.Utility;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Models;
 
@@ -6,31 +9,33 @@ namespace WebApp.Controllers
 {
     public class ConfigurationController : Controller
     {
-        private readonly ConfigurationRecordsUtilities _configurationRecordsUtilities;
+        private readonly MongoDbConnection _connection;
 
         public ConfigurationController(IConfiguration configuration)
         {
             var ConnectionString = configuration["ConnectionStrings:MongoDbConnString"];
-            _configurationRecordsUtilities = new ConfigurationRecordsUtilities(ConnectionString, "SERVICE-A");
+            _connection = new MongoDbConnection(ConnectionString, "SERVICE-A");
+            _connection.Open();
         }
 
         public IActionResult Index()
         {
-            var records = _configurationRecordsUtilities.GetConfigurationRecords().Select(r => ConfigruationRecordViewModelMapper(r));
+            
+            var records = _connection.GetConfigurationRecords().Select(r => ConfigruationRecordViewModelMapper(r));
             return View(records);
         }
 
         [HttpPost]
         public IActionResult Update(ConfigurationRecordViewModel recordViewModel)
         {
-            _configurationRecordsUtilities.UpdateRecord(ConfigurationRecordMapper(recordViewModel));
+            _connection.UpdateRecord(ConfigurationRecordMapper(recordViewModel));
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            _configurationRecordsUtilities.DeleteRecord(id);
+            _connection.DeleteRecord(id);
             return RedirectToAction("Index");
         }
 
@@ -42,7 +47,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public IActionResult Create(ConfigurationRecordViewModel record)
         {
-            _configurationRecordsUtilities.InsertRecord(ConfigurationRecordMapper(record));
+            _connection.InsertRecord(ConfigurationRecordMapper(record));
             return RedirectToAction("Index");
         }
 
@@ -58,7 +63,7 @@ namespace WebApp.Controllers
                 Id = record.Id,
                 Name = record.Name,
                 Type = record.Type,
-                Value = ConfigurationRecordsUtilities.ConvertFromType(record.Value),
+                Value = ConvertType.ConvertFromType(record.Value),
                 IsActive = record.IsActive,
             };
         }
@@ -75,7 +80,7 @@ namespace WebApp.Controllers
                 viewModel.Id,
                 viewModel.Name,
                 viewModel.Type,
-                ConfigurationRecordsUtilities.ConvertToType(viewModel.Value, viewModel.Type),
+                ConvertType.ConvertToType(viewModel.Value, viewModel.Type),
                 viewModel.IsActive
             );
         }
