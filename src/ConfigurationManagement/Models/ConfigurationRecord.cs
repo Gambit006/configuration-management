@@ -22,16 +22,21 @@ namespace ConfigurationManagement.Models
             Value = value;
             IsActive = isActive;
         }
+
+        public ConfigurationRecord()
+        {
+        }
+
         [BsonId(IdGenerator = typeof(BsonObjectIdGenerator))]
         [NonSerialized]
         public BsonObjectId _id;
-        [NonSerialized]
-        public string ApplicationName;
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
         public object Value { get; set; }
         public bool IsActive { get; set; }
+        public string ApplicationName { get; set; }
 
 
 

@@ -1,5 +1,7 @@
 ﻿using ConfigurationManagement;
 using ConfigurationManagement.DatabaseConnection;
+using ConfigurationManagement.DatabaseConnection.MongoDbConnection;
+using ConfigurationManagement.DatabaseConnection.SqlServerConnection;
 using ConfigurationManagement.Models;
 
 
@@ -9,8 +11,16 @@ var mongoContext = new MongoDbContext(mongoConnectionString, mongoDatabaseName);
 IRepository<ConfigurationRecord> configurationRecordRepository = new MongoDbRepository<ConfigurationRecord>(mongoContext, "ConfigurationRecords");
 
 Console.WriteLine(configurationRecordRepository.GetAllAsync().Result.FirstOrDefault().Value.ToString());
-//TODO: type parse error must fix 
 
+
+var sqlConnectionString = "Server=DESKTOP-BC7AGD6\\SQLEXPRESS;Database=ConfigurationManagementDB;Trusted_Connection=True;";
+var sqlContext = new SqlServerDbContext(sqlConnectionString);
+IRepository<ConfigurationRecord> configurationRecordRepositorySql = new SqlServerBaseRepository<ConfigurationRecord>(sqlContext, "ConfigurationRecords", new[] { "Id", "Name", "Type", "Value", "IsActive", "ApplicationName" });
+Console.WriteLine(configurationRecordRepositorySql.GetAllAsync().Result.FirstOrDefault().Value.ToString());
+
+
+//TODO: this code part might need to write again and agian, this decleration will be easy -> var mongoContext = DatabaseFactSory.CreateDbContext(DatabaseType.MongoDB, configuration) as MongoDbContext;
+//TODO: Various db will be able to run correctly at the same time for different records  
 
 //ConfigurationReader configurationReader = new ConfigurationReader("SERVICE-A", "mongodb://localhost:27017", 10000);
 
