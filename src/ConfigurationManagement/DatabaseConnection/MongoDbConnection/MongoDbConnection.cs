@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConfigurationManagement.DatabaseConnection
+namespace ConfigurationManagement.DatabaseConnection.MongoDbConnection
 {
     public class MongoDbConnection : IDatabaseConnection
     {

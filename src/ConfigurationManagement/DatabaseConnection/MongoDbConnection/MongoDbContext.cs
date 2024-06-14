@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConfigurationManagement.DatabaseConnection
+namespace ConfigurationManagement.DatabaseConnection.MongoDbConnection
 {
-    public class MongoDbContext: IDbContext
+    public class MongoDbContext : IDbContext
     {
         private readonly IMongoDatabase _database;
 

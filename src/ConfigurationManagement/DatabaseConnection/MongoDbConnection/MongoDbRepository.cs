@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConfigurationManagement.DatabaseConnection
+namespace ConfigurationManagement.DatabaseConnection.MongoDbConnection
 {
     public class MongoDbRepository<T> : IRepository<T> where T : class
     {
