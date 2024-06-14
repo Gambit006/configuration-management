@@ -87,5 +87,6 @@ namespace ConfigurationManagement.DatabaseConnection
 
             collection.InsertOne(document);
         }
+
     }
 }
