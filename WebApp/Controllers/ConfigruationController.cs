@@ -1,5 +1,5 @@
 ﻿using ConfigurationManagement;
-using ConfigurationManagement.DatabaseConnection;
+using ConfigurationManagement.DatabaseConnection.MongoDbConnection;
 using ConfigurationManagement.Models;
 using ConfigurationManagement.Utility;
 using Microsoft.AspNetCore.Mvc;
